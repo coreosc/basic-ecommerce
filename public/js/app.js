@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 35);
+/******/ 	return __webpack_require__(__webpack_require__.s = 38);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -471,7 +471,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = defaults;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(32)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(33)))
 
 /***/ }),
 /* 2 */
@@ -766,27 +766,22 @@ module.exports = g;
 
 /***/ }),
 /* 8 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Checkout_vue__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_Checkout_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__components_Checkout_vue__);
+__webpack_require__(29);
 
-__webpack_require__(28);
 
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
 
-// Vue.component('example', require('./components/Example.vue'));
-// Vue.component('minicart', require('./components/Minicart.vue'));
-// import Minicart from './components/Minicart.vue';
 var app = new Vue({
     el: '#app',
+
+    components: {
+        'checkout': __WEBPACK_IMPORTED_MODULE_0__components_Checkout_vue___default.a
+    },
 
     data: {
         products: [],
@@ -807,6 +802,11 @@ var app = new Vue({
 
             this.updateSession(id, 0);
         },
+        getProductsQuantity: function getProductsQuantity() {
+            return parseInt(this.products.reduce(function (carry, item) {
+                return carry + item.quantity;
+            }, 0));
+        },
         round: function round(price) {
             return Math.round(100 * price) / 100;
         },
@@ -822,12 +822,28 @@ var app = new Vue({
                 product.quantity = 1;
             }
         },
+        incrementProductQuantity: function incrementProductQuantity(productIndex) {
+            if (this.products[productIndex].quantity > this.products[productIndex].inStockQuantity) {
+                this.products[productIndex].quantity = this.products[productIndex].inStockQuantity;
+
+                $('#modalMessage').text(window.Messages.outOfStock);
+                $('#myModal').modal();
+            }
+
+            return this.products[productIndex].quantity;
+        },
         updateSession: function updateSession(productId, quantity) {
             $.post('/update-cart', { id: productId, quantity: quantity, '_token': Laravel.csrfToken });
         },
         addToCart: function addToCart(product) {
-            this.products.push(product);
-            this.updateSession(product.id, product.quantity);
+            var currentIndex = void 0;
+
+            this.products.filter(function (p, index) {
+                currentIndex = index;
+                return p.id === product.id;
+            }).length === 0 ? currentIndex = this.products.push(product) - 1 : this.products[currentIndex].quantity++;
+
+            this.updateSession(product.id, this.incrementProductQuantity(currentIndex));
         }
     },
 
@@ -1692,10 +1708,47 @@ module.exports = function spread(callback) {
 
 /***/ }),
 /* 28 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+
+    props: ['deliveriesJson', 'myAddressesJson'],
+    data: function data() {
+        return {
+            deliveries: {},
+            myAddresses: {},
+            delivery: 0,
+            deliveryWithAddress: false
+        };
+    },
+
+
+    methods: {
+        selectDelivery: function selectDelivery(id) {
+            this.delivery = id;
+        },
+        upsertDeliveryAddress: function upsertDeliveryAddress() {
+            $.post('/vue/adres', { '_token': Laravel.csrfToken }, function (response) {
+                console.log(response);
+            }.bind(this));
+        }
+    },
+
+    mounted: function mounted() {
+        this.deliveries = JSON.parse(this.deliveriesJson);
+        this.myAddresses = JSON.parse(this.myAddressesJson);
+    }
+});
+
+/***/ }),
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-window._ = __webpack_require__(31);
+window._ = __webpack_require__(32);
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -1703,9 +1756,9 @@ window._ = __webpack_require__(31);
  * code may be modified to fit the specific needs of your application.
  */
 
-window.$ = window.jQuery = __webpack_require__(30);
+window.$ = window.jQuery = __webpack_require__(31);
 
-__webpack_require__(29);
+__webpack_require__(30);
 
 /**
  * Vue is a modern JavaScript library for building interactive web interfaces
@@ -1713,7 +1766,7 @@ __webpack_require__(29);
  * and simple, leaving you to focus on building your next great project.
  */
 
-window.Vue = __webpack_require__(33);
+window.Vue = __webpack_require__(36);
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
@@ -1742,7 +1795,7 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 // });
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports) {
 
 /*!
@@ -4125,7 +4178,7 @@ if (typeof jQuery === 'undefined') {
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -14385,7 +14438,7 @@ return jQuery;
 
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, module) {var __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -31474,10 +31527,10 @@ return jQuery;
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(34)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(37)(module)))
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -31667,7 +31720,97 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 33 */
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var Component = __webpack_require__(35)(
+  /* script */
+  __webpack_require__(28),
+  /* template */
+  null,
+  /* scopeId */
+  null,
+  /* cssModules */
+  null
+)
+Component.options.__file = "/Users/kamil/projects/web/enfant/resources/assets/js/components/Checkout.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key !== "__esModule"})) {console.error("named exports are not supported in *.vue files.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-65376df8", Component.options)
+  } else {
+    hotAPI.reload("data-v-65376df8", Component.options)
+  }
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 35 */
+/***/ (function(module, exports) {
+
+// this module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle
+
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  scopeId,
+  cssModules
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  // inject cssModules
+  if (cssModules) {
+    var computed = Object.create(options.computed || null)
+    Object.keys(cssModules).forEach(function (key) {
+      var module = cssModules[key]
+      computed[key] = function () { return module }
+    })
+    options.computed = computed
+  }
+
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
+
+
+/***/ }),
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41762,7 +41905,7 @@ module.exports = Vue$3;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
 
 /***/ }),
-/* 34 */
+/* 37 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -41790,7 +41933,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 35 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(8);

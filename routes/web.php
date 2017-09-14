@@ -19,11 +19,26 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index');
 
+//Ajax actions
 Route::get('/cart-state', 'CartController@cartState')->name('cart.state');
-Route::post('/update-cart', 'CartController@updateCart')->name('cart.update');
+
 Route::get('/koszyk', 'CartController@index')->name('cart');
 Route::post('/dodaj-do-koszyka/{product}', 'CartController@add')->name('cart.add');
 Route::post('/usun-z-koszyka/{product}', 'CartController@remove')->name('cart.remove');
+
+Route::get('/koszyk/zaloz-konto', 'RegisterController@showRegistrationForm');
+Route::post('/koszyk/zaloz-konto', 'RegisterController@processRegistrationForm')->name('register.process');
+
+Route::get('/kasa/', 'CheckoutController@checkout')->name('checkout');
+
+Route::post('/koszyk/zaloz-konto', 'RegisterController@processRegistrationForm')->name('register.process');
+
+
+//@TODO add all vue prefixes
+Route::post('/update-cart', 'CartController@updateCart')->name('cart.update');
+Route::post('/vue/adres', 'UserController@upsertAddress')->name('user.upsertDeliveryAddress');
+
+
 
 
 //One level category or manufacturer

@@ -1,22 +1,13 @@
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
-
 require('./bootstrap');
 
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
+import Checkout from './components/Checkout.vue';
 
-// Vue.component('example', require('./components/Example.vue'));
-// Vue.component('minicart', require('./components/Minicart.vue'));
-// import Minicart from './components/Minicart.vue';
 const app = new Vue({
     el: '#app',
+
+    components: {
+        'checkout': Checkout
+    },
 
     data: {
         products: [],
@@ -38,6 +29,10 @@ const app = new Vue({
             this.updateSession(id, 0);
         },
 
+        getProductsQuantity() {
+            return parseInt(this.products.reduce(function(carry, item) { return carry + item.quantity }, 0));
+        },
+
         round(price) {
             return Math.round(100 * price) / 100;
         },
@@ -56,13 +51,32 @@ const app = new Vue({
             }
         },
 
+        incrementProductQuantity(productIndex) {
+            if(this.products[productIndex].quantity > this.products[productIndex].inStockQuantity) {
+                this.products[productIndex].quantity = this.products[productIndex].inStockQuantity;
+
+                $('#modalMessage').text(window.Messages.outOfStock);
+                $('#myModal').modal();
+            }
+
+            return this.products[productIndex].quantity;
+        },
+
         updateSession(productId, quantity){
             $.post('/update-cart', {id: productId, quantity: quantity, '_token': Laravel.csrfToken});
         },
 
         addToCart(product){
-            this.products.push(product);
-            this.updateSession(product.id, product.quantity);
+            let currentIndex;
+
+            this.products.filter(function(p, index) {
+                currentIndex = index;
+                return p.id === product.id;
+            }).length === 0 ? currentIndex = this.products.push(product) - 1 : this.products[currentIndex].quantity++;
+
+            this.updateSession(product.id, this.incrementProductQuantity(currentIndex));
+
+
         }
 
     },

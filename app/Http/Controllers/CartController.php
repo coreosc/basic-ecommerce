@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Cart;
-use App\Product;
 
 class CartController extends Controller
 {
@@ -38,27 +37,13 @@ class CartController extends Controller
      */
     function updateCart()
     {
-        if(request('quantity') == 0){
+        if (request('quantity') == 0) {
             Cart::removeProduct(request('id'));
+
+            return;
         }
 
-        Cart::updateProduct(request('id'), request('quantity'));
-    }
-
-    function add(Product $product)
-    {
-        return [
-            'success'      => Cart::addProduct($product),
-            'minicartHtml' => (string)(view()->make('cart.partials.minicart', ['products' => Cart::getProducts()]))
-        ];
-    }
-
-    function remove(Product $product)
-    {
-        return [
-            'success'      => Cart::removeProduct($product),
-            'minicartHtml' => (string)(view()->make('cart.partials.minicart', ['products' => Cart::getProducts()]))
-        ];
+        Cart::updateProduct(request('id'), (int)request('quantity'));
     }
 
 }

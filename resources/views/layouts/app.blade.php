@@ -20,6 +20,12 @@
         ]) !!};
     </script>
 
+    <script>
+        window.Messages = {!! json_encode([
+            'outOfStock' => 'Brak kolejnych sztuk w magazynie',
+        ]) !!};
+    </script>
+
     <script
             src="https://code.jquery.com/jquery-3.2.1.min.js"
             integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
@@ -80,7 +86,7 @@
                             </li>
                         @endif
                         <li>
-                            <a href="{{ route('cart') }}">Koszyk (0)</a>
+                            <a href="{{ route('cart') }}">Koszyk (@{{ getProductsQuantity() }})</a>
                             <div id="minicart">
                                 @include('cart.partials.minicart', ['products' => \App\Cart::getProducts()])
                             </div>
@@ -92,7 +98,22 @@
         @yield('content')
     </div>
 
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body" id="modalMessage">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>
+
 </body>
 </html>

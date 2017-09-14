@@ -15,8 +15,7 @@
                         id: {{$product->id}},
                         name: '{{ $product->name }}',
                         price: '{{ $product->price() }}',
-                        quantity: {{$product->getInCartQuantity() + 1}},
-                        inStockQuantity: {{$product->quantity}},
+                        quantity: 1,
                         inStockQuantity: {{$product->quantity}},
                         summaryPrice: {{$product->getSummaryPriceInCart()}}
                         })">Dodaj do koszyka
